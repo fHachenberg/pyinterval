@@ -33,7 +33,7 @@ client is meant to be used for instrumenting your tools.
 Instrumenting `make` via alias
 ------------------------------
 
-TODO
+    alias make='pyinterval_instrument "make $*"'
 
 Evaluating the results
 ----------------------
