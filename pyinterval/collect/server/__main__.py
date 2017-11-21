@@ -42,5 +42,6 @@ def main(args=None):
         server.serve_forever()
 
 if __name__ == "__main__":
-    main()
+    status = main()
+    raise SystemExit(status)
     

@@ -90,8 +90,6 @@ setup(
     # http://docs.python.org/3.4/distutils/setupscript.html#installing-additional-files # noqa
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
     data_files=[], #('my_data', ['data/data_file'])],
-    
-    scripts=['pyinterval_instrument.sh'],
 
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
@@ -99,6 +97,7 @@ setup(
     entry_points={
         'console_scripts': [
             'pyinterval_client=pyinterval.collect.client.__main__:main',
+            'pyinterval_instrument=pyinterval.collect.instrument:main',
             'pyinterval_server=pyinterval.collect.server.__main__:main',
         ],
     },
