@@ -12,12 +12,20 @@ from subprocess import call
 import os
 import sys
 
+from setproctitle import setproctitle
+
 def main(args=None) -> int:
     if args is None:
-        args = sys.argv
+        args = sys.argv        
+
+    # set process title so instrumentation is not
+    # visible from outside
+    setproctitle(args[1])
 
     cwd = os.getcwd()
    
+    # join all arguments into one single
+    # task string passed to the pyinterval client
     cmdline = " ".join(args[1:])
    
     client_main([cmdline, "--workdir=" + cwd, "--start"])
