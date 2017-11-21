@@ -18,9 +18,11 @@ def main(args=None) -> int:
 
     cwd = os.getcwd()
    
-    client_main(["pyinterval_client"] + args[1:] + ["--workdir=" + cwd, "--start"])
-    status = call(args[1:], shell=True)
-    client_main(["pyinterval_client"] + args[1:] + ["--workdir=" + cwd, "--stop"])
+    cmdline = " ".join(args[1:])
+   
+    client_main([cmdline, "--workdir=" + cwd, "--start"])
+    status = call(cmdline, shell=True)
+    client_main([cmdline, "--workdir=" + cwd, "--stop"])
     return status
 
 if __name__ == "__main__":
