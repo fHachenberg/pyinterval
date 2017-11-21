@@ -1,7 +1,7 @@
 from xmlrpc.server import SimpleXMLRPCServer
 import os
 from urllib.parse import urlparse
-from .sqlite3 import SQLite3Server
+from .sqlite3 import managed_server
 import argparse
 from pprint import pprint
 
@@ -21,21 +21,24 @@ args = parser.parse_args()
 
 parse_results = urlparse(args.url)
 
-db_server = SQLite3Server(args.dbfile)
+# handles cleanup on KeyboardInterrupt and other exceptions
+with managed_server(args.dbfile) as db_server:
 
-server = SimpleXMLRPCServer((parse_results.hostname, parse_results.port), allow_none=True)
+    server = SimpleXMLRPCServer((parse_results.hostname, parse_results.port), allow_none=True)
 
-print("Listening on", args.url)
+    print("Listening on", args.url)
 
-if args.verbose:
-    def emit(*args, **kwargs):
-        db_server.emit(*args, **kwargs)
-        print("**** current state ****")
-        pprint(db_server._dump_db())
-else:
-    emit = db_server.emit
+    if args.verbose:
+        # declare wrapper function which outputs server state
+        # after each event
+        def emit(*args, **kwargs):
+            db_server.emit(*args, **kwargs)
+            print("**** current state ****")
+            pprint(db_server._dump_db())
+    else:
+        emit = db_server.emit
 
-server.register_function(emit, "emit")
+    server.register_function(emit, "emit")
 
-server.serve_forever()
+    server.serve_forever()
 
