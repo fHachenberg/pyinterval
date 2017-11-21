@@ -2,12 +2,18 @@ import sqlite3
 from datetime import datetime
 from typing import Optional, List, Tuple
 import os
+from contextlib import contextmanager
 
 class SQLite3Server:
     '''
     allows logging of events into sqlite3 db
 
     Normally, each user uses its own DB file to allow for easy management via version control (svn, git)
+    
+    .. important::
+    
+        Should not be used directly. Please use managed_server instead, because the context manager
+        automatically handles the cleanup. 
     '''
     def __init__(self, dbfile: str):
         if not os.path.exists(dbfile):
@@ -36,6 +42,16 @@ class SQLite3Server:
             timestamp = datetime.now().timestamp()
 
         self.conn.execute("INSERT INTO events values (?, ?, ?, ?)", (timestamp, task, workdir, start))
+        # We write changes to the file immediately to be on the safe side
+        # This might get very slow for many logged events, so it might be necessary 
+        # in the future to periodically commit or only commit on close!
+        self.conn.commit()       
+
+    def close(self):
+        '''
+        Must be the final action of the server object
+        '''        
+        self.conn.close()
 
     def _dump_db(self) -> List[Tuple[int, str, str, int]]:
         '''
@@ -44,3 +60,14 @@ class SQLite3Server:
         '''
         c = self.conn.execute("SELECT * FROM events")
         return c.fetchall()
+    
+@contextmanager
+def managed_server(dbfile: str):
+    '''
+    Context manager to setup server instance and close it appropriately in case of
+    exceptions.
+    '''
+    server = SQLite3Server(dbfile)
+    yield server
+    server.close()
+    
