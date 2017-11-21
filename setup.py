@@ -98,8 +98,8 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'pyinterval_client=pyinterval.collect.client:main',
-            'pyinterval_server=pyinterval.collect.server:main',
+            'pyinterval_client=pyinterval.collect.client.__main__:main',
+            'pyinterval_server=pyinterval.collect.server.__main__:main',
         ],
     },
 )
