@@ -1,5 +1,5 @@
 function instrumented_make() {    
-    pyinterval_instrument make "$*"
+    pyinterval_instrument "make $*"
     return $?
 }
 # Instrumentierung zum Loggen von unproduktiven Zeiten
